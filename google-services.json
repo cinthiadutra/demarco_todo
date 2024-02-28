@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "892589536310",
+    "project_id": "demarco-todo",
+    "storage_bucket": "demarco-todo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892589536310:android:0a3cc5e2ae9d80cadfd497",
+        "android_client_info": {
+          "package_name": "com.example.demarco_todo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBU70WYiR2HHKgmxM1TvaQCQn5QgDbPchw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
