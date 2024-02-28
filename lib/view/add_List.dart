@@ -49,6 +49,7 @@ class _AddListState extends State<AddList> {
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all()),
                 child: DateFormatField(
+                  controller: dataController,
                     onComplete: (date) {
                       if (date != null) {
                         setState(() {
@@ -111,11 +112,12 @@ class _AddListState extends State<AddList> {
                         setState(() {
                           controllerTodo.loading = true;
                           controllerTodo.post = postController.text;
-                          controllerTodo.task = taskController.text;
                           controllerTodo.dataTask = dataController.text;
                           controllerTodo.ListTask.add(taskController.text);
                         });
                         await controllerTodo.addTodo();
+                        Modular.to.pop();
+                        Modular.to.pop();
                       }),
                   const SizedBox(
                     width: 10,
@@ -137,7 +139,7 @@ class _AddListState extends State<AddList> {
                           taskController.clear();
                           dataController.clear();
                         });
-                        Modular.to.pop();
+                        Modular.to.navigate('/home');
                       }),
                 ],
               )

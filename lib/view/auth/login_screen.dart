@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -38,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
         .signInWithEmailAndPassword(
             email: email.text, password: password.text.toString())
         .then((value) {
-          
       Utils().toastMessage(value.user!.email.toString());
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const PageScreen()));
@@ -57,88 +55,84 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-    
       child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text('Login'),
-        ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          controller: email,
-                          decoration: const InputDecoration(
-                              hintText: 'Email',
-                              prefixIcon: Icon(Icons.alternate_email)),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Enter email';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.text,
-                          controller: password,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                              hintText: 'Password',
-                              prefixIcon: Icon(Icons.lock_open)),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Insira um password';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    )),
-                const SizedBox(
-                  height: 50,
-                ),
-                ElevatedButton(
-                  child: const Text('Login'),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      login();
-                    }
-                  },
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Não tem uma conta?"),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignUpScreen()));
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              Image.asset('assets/images/logo.png'),
+              const SizedBox(
+                height: 20,
+              ),
+              Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        controller: email,
+                        decoration: const InputDecoration(
+                            hintText: 'Email',
+                            prefixIcon: Icon(Icons.alternate_email)),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Enter email';
+                          }
+                          return null;
                         },
-                        child: const Text('Cadastrar'))
-                  ],
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-              ],
-            ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        keyboardType: TextInputType.text,
+                        controller: password,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                            hintText: 'Password',
+                            prefixIcon: Icon(Icons.lock_open)),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Insira um password';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  )),
+              const SizedBox(
+                height: 50,
+              ),
+              ElevatedButton(
+                child: const Text('Entrar'),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    login();
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Não tem uma conta?"),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpScreen()));
+                      },
+                      child: const Text('Cadastrar'))
+                ],
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+            ],
           ),
         ),
       ),

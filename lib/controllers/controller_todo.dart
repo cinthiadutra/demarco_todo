@@ -25,16 +25,21 @@ abstract class ControllerTodoBase with Store {
   String? task = '';
   String? dataTask = '';
   @observable
+  String? downloadURL = '';
+  @observable
+  XFile? imagemEsc;
+  @observable
   String pathfoto = '';
   List<ModelTodo> listaTodoGeral = [];
   final List<String> ListTask = [];
+  ObservableList<String> listFoto = ObservableList.of([]);
   @observable
   bool loading = false;
   final _auth = FirebaseAuth.instance;
 
   @action
   Future addTodo() async {
-    final String ids = _auth.currentUser?.displayName ?? 'anonimous';
+    final String ids = _auth.currentUser?.email ?? 'anonimous';
     loading = true;
 
     await databaseRef.child(ids).set({
@@ -42,14 +47,13 @@ abstract class ControllerTodoBase with Store {
       'Tarefa': post,
       'data': dataController,
       'image': pathfoto,
-      'id': _auth.currentUser?.displayName
+      'id': _auth.currentUser?.email
     }).then((value) {
       modeloUsado =
           ModelTodo(isCompleted: false, titulo: post, tarefas: ListTask);
       Utils().toastMessage('Conteudo Adicionado');
       Modular.to.pop();
       postController.clear();
-      taskController.clear();
       dataController.clear();
       loading = false;
     }).onError((error, stackTrace) {
@@ -115,6 +119,7 @@ abstract class ControllerTodoBase with Store {
   Future<XFile?> getImage() async {
     final ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    imagemEsc = image;
     return image;
   }
 
@@ -123,10 +128,27 @@ abstract class ControllerTodoBase with Store {
     try {
       String ref = 'images/img-${DateTime.now().toString()}.jpg';
       await storage.ref(ref).putFile(file);
+      listFoto.add(ref);
       pathfoto = ref;
     } on FirebaseException catch (e) {
       throw Exception('Erro no upload');
     }
+  }
+
+  Future getData() async {
+    try {
+      await getImageMemory();
+      return downloadURL;
+    } catch (e) {
+      debugPrint("Error - $e");
+      return null;
+    }
+  }
+
+  Future<void> getImageMemory() async {
+    downloadURL =
+        await FirebaseStorage.instance.ref().child(pathfoto).getDownloadURL();
+    debugPrint(downloadURL.toString());
   }
 
   pickAndUploadImage() async {

@@ -6,9 +6,11 @@ import 'package:demarco_todo/view/page_tasks.dart';
 import 'package:demarco_todo/view/widget/cards_todo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:firebase_database/ui/firebase_sorted_list.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-
+import 'package:velocity_x/velocity_x.dart';
 
 class PageScreen extends StatefulWidget {
   const PageScreen({Key? key}) : super(key: key);
@@ -21,7 +23,7 @@ class _PageScreenState extends State<PageScreen> {
   final auth = FirebaseAuth.instance;
 
   bool loading = false;
-  final  controller= Modular.get<ControllerTodo>();
+  final controller = Modular.get<ControllerTodo>();
   @override
   void initState() {
     super.initState();
@@ -58,6 +60,26 @@ class _PageScreenState extends State<PageScreen> {
       ),
       body: Column(
         children: [
+          FutureBuilder(
+            future: controller.getData(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const Text(
+                  "Something went wrong",
+                );
+              }
+              if (snapshot.connectionState == ConnectionState.done) {
+                return VxSwiper.builder(
+                    itemCount: 3,
+                    itemBuilder: (context, snap) {
+                      return Image.network(
+                        snapshot.data.toString(),
+                      );
+                    });
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
           Expanded(
             child: FirebaseAnimatedList(
                 query: controller.databaseRef,

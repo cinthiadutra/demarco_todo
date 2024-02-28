@@ -12,7 +12,7 @@ class TodoModule extends Module {
   @override
   void routes(r) {
     r.child('/', child: (context) => const LoginScreen());
-    r.child('/login', child: (context) => const PageScreen());
+    r.child('/home', child: (context) => const PageScreen());
   }
 
   @override

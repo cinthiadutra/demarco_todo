@@ -14,7 +14,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(ModularApp(module: TodoModule(), child: MyApp()));
+  runApp(ModularApp(module: TodoModule(), child: const MyApp()));
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -30,11 +30,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
         home: const LoginScreen(),
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
           useMaterial3: true,
         ));
   }
