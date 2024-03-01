@@ -9,51 +9,51 @@ part of 'controller_todo.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$ControllerTodo on ControllerTodoBase, Store {
-  late final _$downloadURLAtom =
-      Atom(name: 'ControllerTodoBase.downloadURL', context: context);
+  late final _$pathImageAtom =
+      Atom(name: 'ControllerTodoBase.pathImage', context: context);
 
   @override
-  String? get downloadURL {
-    _$downloadURLAtom.reportRead();
-    return super.downloadURL;
+  String get pathImage {
+    _$pathImageAtom.reportRead();
+    return super.pathImage;
   }
 
   @override
-  set downloadURL(String? value) {
-    _$downloadURLAtom.reportWrite(value, super.downloadURL, () {
-      super.downloadURL = value;
+  set pathImage(String value) {
+    _$pathImageAtom.reportWrite(value, super.pathImage, () {
+      super.pathImage = value;
     });
   }
 
-  late final _$imagemEscAtom =
-      Atom(name: 'ControllerTodoBase.imagemEsc', context: context);
+  late final _$dataAtom =
+      Atom(name: 'ControllerTodoBase.data', context: context);
 
   @override
-  XFile? get imagemEsc {
-    _$imagemEscAtom.reportRead();
-    return super.imagemEsc;
+  String get data {
+    _$dataAtom.reportRead();
+    return super.data;
   }
 
   @override
-  set imagemEsc(XFile? value) {
-    _$imagemEscAtom.reportWrite(value, super.imagemEsc, () {
-      super.imagemEsc = value;
+  set data(String value) {
+    _$dataAtom.reportWrite(value, super.data, () {
+      super.data = value;
     });
   }
 
-  late final _$pathfotoAtom =
-      Atom(name: 'ControllerTodoBase.pathfoto', context: context);
+  late final _$tarefaAtom =
+      Atom(name: 'ControllerTodoBase.tarefa', context: context);
 
   @override
-  String get pathfoto {
-    _$pathfotoAtom.reportRead();
-    return super.pathfoto;
+  String get tarefa {
+    _$tarefaAtom.reportRead();
+    return super.tarefa;
   }
 
   @override
-  set pathfoto(String value) {
-    _$pathfotoAtom.reportWrite(value, super.pathfoto, () {
-      super.pathfoto = value;
+  set tarefa(String value) {
+    _$tarefaAtom.reportWrite(value, super.tarefa, () {
+      super.tarefa = value;
     });
   }
 
@@ -73,26 +73,110 @@ mixin _$ControllerTodo on ControllerTodoBase, Store {
     });
   }
 
-  late final _$addTodoAsyncAction =
-      AsyncAction('ControllerTodoBase.addTodo', context: context);
+  late final _$tasksAtom =
+      Atom(name: 'ControllerTodoBase.tasks', context: context);
 
   @override
-  Future<dynamic> addTodo() {
-    return _$addTodoAsyncAction.run(() => super.addTodo());
+  ObservableList<ModelTodo> get tasks {
+    _$tasksAtom.reportRead();
+    return super.tasks;
   }
 
-  late final _$editarMensagemAsyncAction =
-      AsyncAction('ControllerTodoBase.editarMensagem', context: context);
+  @override
+  set tasks(ObservableList<ModelTodo> value) {
+    _$tasksAtom.reportWrite(value, super.tasks, () {
+      super.tasks = value;
+    });
+  }
+
+  late final _$currentIndexAtom =
+      Atom(name: 'ControllerTodoBase.currentIndex', context: context);
 
   @override
-  Future<dynamic> editarMensagem(
-      String id, String novoTitulo, String novaTarefa) {
-    return _$editarMensagemAsyncAction
-        .run(() => super.editarMensagem(id, novoTitulo, novaTarefa));
+  int get currentIndex {
+    _$currentIndexAtom.reportRead();
+    return super.currentIndex;
+  }
+
+  @override
+  set currentIndex(int value) {
+    _$currentIndexAtom.reportWrite(value, super.currentIndex, () {
+      super.currentIndex = value;
+    });
+  }
+
+  late final _$itensAtom =
+      Atom(name: 'ControllerTodoBase.itens', context: context);
+
+  @override
+  List<ModelTodo> get itens {
+    _$itensAtom.reportRead();
+    return super.itens;
+  }
+
+  @override
+  set itens(List<ModelTodo> value) {
+    _$itensAtom.reportWrite(value, super.itens, () {
+      super.itens = value;
+    });
+  }
+
+  late final _$fetchTasksAsyncAction =
+      AsyncAction('ControllerTodoBase.fetchTasks', context: context);
+
+  @override
+  Future<void> fetchTasks() {
+    return _$fetchTasksAsyncAction.run(() => super.fetchTasks());
+  }
+
+  late final _$addTaskAsyncAction =
+      AsyncAction('ControllerTodoBase.addTask', context: context);
+
+  @override
+  Future<void> addTask(ModelTodo task) {
+    return _$addTaskAsyncAction.run(() => super.addTask(task));
+  }
+
+  late final _$updateTaskAsyncAction =
+      AsyncAction('ControllerTodoBase.updateTask', context: context);
+
+  @override
+  Future<void> updateTask(ModelTodo task) {
+    return _$updateTaskAsyncAction.run(() => super.updateTask(task));
+  }
+
+  late final _$deleteTaskAsyncAction =
+      AsyncAction('ControllerTodoBase.deleteTask', context: context);
+
+  @override
+  Future<void> deleteTask(String taskId) {
+    return _$deleteTaskAsyncAction.run(() => super.deleteTask(taskId));
   }
 
   late final _$ControllerTodoBaseActionController =
       ActionController(name: 'ControllerTodoBase', context: context);
+
+  @override
+  void carregarItens(List<ModelTodo> itens) {
+    final _$actionInfo = _$ControllerTodoBaseActionController.startAction(
+        name: 'ControllerTodoBase.carregarItens');
+    try {
+      return super.carregarItens(itens);
+    } finally {
+      _$ControllerTodoBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void atualizarIndice(int index) {
+    final _$actionInfo = _$ControllerTodoBaseActionController.startAction(
+        name: 'ControllerTodoBase.atualizarIndice');
+    try {
+      return super.atualizarIndice(index);
+    } finally {
+      _$ControllerTodoBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void atualizarBancoDeDadosEEnviarNotificacao() {
@@ -106,23 +190,15 @@ mixin _$ControllerTodo on ControllerTodoBase, Store {
   }
 
   @override
-  dynamic removeList(String id) {
-    final _$actionInfo = _$ControllerTodoBaseActionController.startAction(
-        name: 'ControllerTodoBase.removeList');
-    try {
-      return super.removeList(id);
-    } finally {
-      _$ControllerTodoBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
-downloadURL: ${downloadURL},
-imagemEsc: ${imagemEsc},
-pathfoto: ${pathfoto},
-loading: ${loading}
+pathImage: ${pathImage},
+data: ${data},
+tarefa: ${tarefa},
+loading: ${loading},
+tasks: ${tasks},
+currentIndex: ${currentIndex},
+itens: ${itens}
     ''';
   }
 }

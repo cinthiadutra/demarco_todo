@@ -1,20 +1,22 @@
 import 'package:demarco_todo/controllers/controller_todo.dart';
+import 'package:demarco_todo/model/model.dart';
 import 'package:demarco_todo/utils/utils.dart';
 import 'package:demarco_todo/view/auth/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-
 class PageTask extends StatefulWidget {
   final int? index;
-  String? titulo;
+  String? data;
   String? tarefa;
+  String? image;
   PageTask({
     Key? key,
     this.index,
-    this.titulo,
+    this.data,
     this.tarefa,
+    this.image
   }) : super(key: key);
 
   @override
@@ -22,10 +24,9 @@ class PageTask extends StatefulWidget {
 }
 
 class _PageTaskState extends State<PageTask> {
-final controllerTodo = Modular.get<ControllerTodo>();
+  final controllerTodo = Modular.get<ControllerTodo>();
   final auth = FirebaseAuth.instance;
 
-  
   @override
   void initState() {
     super.initState();
@@ -36,8 +37,7 @@ final controllerTodo = Modular.get<ControllerTodo>();
 
   @override
   Widget build(BuildContext context) {
-
-    editControntroller.text = widget.titulo!;
+    editControntroller.text = widget.data!;
     editTaskControntroller.text = widget.tarefa!;
     return Scaffold(
       appBar: AppBar(
@@ -83,8 +83,10 @@ final controllerTodo = Modular.get<ControllerTodo>();
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          controllerTodo.editarMensagem(auth.currentUser?.displayName??'anonimous', editControntroller.text,
-              editTaskControntroller.text);
+          controllerTodo.updateTask(ModelTodo(
+            isCompleted: false,
+            tarefas: widget.tarefa,
+          ));
         },
         child: const Icon(Icons.update),
       ),

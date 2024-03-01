@@ -1,7 +1,10 @@
 import 'package:date_format_field/date_format_field.dart';
 import 'package:demarco_todo/controllers/controller_todo.dart';
+import 'package:demarco_todo/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:intl/intl.dart';
+import 'package:mobx/mobx.dart';
 
 class AddList extends StatefulWidget {
   const AddList({Key? key}) : super(key: key);
@@ -15,6 +18,8 @@ class _AddListState extends State<AddList> {
   final taskController = TextEditingController();
   final dataController = TextEditingController();
   final controllerTodo = Modular.get<ControllerTodo>();
+  @observable
+  ModelTodo model = ModelTodo(isCompleted: false);
 
   @override
   void initState() {
@@ -49,11 +54,11 @@ class _AddListState extends State<AddList> {
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all()),
                 child: DateFormatField(
-                  controller: dataController,
+                    controller: dataController,
                     onComplete: (date) {
                       if (date != null) {
                         setState(() {
-                          controllerTodo.dataTask = date.toString();
+                          dataController.text = date.toString();
                         });
                       }
                     },
@@ -83,7 +88,7 @@ class _AddListState extends State<AddList> {
                               ),
                             )),
                         onPressed: () {
-                          controllerTodo.pickAndUploadImage();
+                          controllerTodo.getImageFromGallery();
                         },
                         child: const Text(
                           'Enviar',
@@ -111,11 +116,11 @@ class _AddListState extends State<AddList> {
                       onPressed: () async {
                         setState(() {
                           controllerTodo.loading = true;
-                          controllerTodo.post = postController.text;
-                          controllerTodo.dataTask = dataController.text;
-                          controllerTodo.ListTask.add(taskController.text);
+                          controllerTodo.tarefa = postController.text;
+                          controllerTodo.data = dataController.text;
+                          controllerTodo.tasks.add(ModelTodo(isCompleted: false, data: DateFormat().parse(controllerTodo.data),tarefas:controllerTodo.tarefa,image: controllerTodo.pathImage, ));
                         });
-                        await controllerTodo.addTodo();
+                        await controllerTodo.addTask(model);
                         Modular.to.pop();
                         Modular.to.pop();
                       }),

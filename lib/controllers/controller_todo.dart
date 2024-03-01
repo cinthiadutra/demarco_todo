@@ -1,14 +1,7 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:demarco_todo/model/model.dart';
-import 'package:demarco_todo/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobx/mobx.dart';
 part 'controller_todo.g.dart';
@@ -16,75 +9,103 @@ part 'controller_todo.g.dart';
 class ControllerTodo = ControllerTodoBase with _$ControllerTodo;
 
 abstract class ControllerTodoBase with Store {
-  final databaseRef = FirebaseDatabase.instance.ref('Post');
-  final taskController = TextEditingController();
-  final postController = TextEditingController();
-  var dataController = TextEditingController();
-  ModelTodo? modeloUsado;
-  String post = '';
-  String? task = '';
-  String? dataTask = '';
+  final databaseReference = FirebaseDatabase.instance.ref().child('tasks');
   @observable
-  String? downloadURL = '';
+  String pathImage = '';
+
   @observable
-  XFile? imagemEsc;
+  String data = '';
+
   @observable
-  String pathfoto = '';
-  List<ModelTodo> listaTodoGeral = [];
-  final List<String> ListTask = [];
-  ObservableList<String> listFoto = ObservableList.of([]);
+  String tarefa = '';
+
   @observable
   bool loading = false;
-  final _auth = FirebaseAuth.instance;
+
+  @observable
+  ObservableList<ModelTodo> tasks = ObservableList<ModelTodo>();
+
+ final auth = FirebaseAuth.instance;
+
+  @observable
+  int currentIndex = 0; 
+  @observable
+  List<ModelTodo> itens = []; // Índice da imagem atual no VXSwiper
 
   @action
-  Future addTodo() async {
-    final String ids = _auth.currentUser?.email ?? 'anonimous';
-    loading = true;
-
-    await databaseRef.child(ids).set({
-      'Usuario': _auth.currentUser?.email,
-      'Tarefa': post,
-      'data': dataController,
-      'image': pathfoto,
-      'id': _auth.currentUser?.email
-    }).then((value) {
-      modeloUsado =
-          ModelTodo(isCompleted: false, titulo: post, tarefas: ListTask);
-      Utils().toastMessage('Conteudo Adicionado');
-      Modular.to.pop();
-      postController.clear();
-      dataController.clear();
-      loading = false;
-    }).onError((error, stackTrace) {
-      Utils().toastMessage(error.toString());
-
-      loading = false;
-    });
+  void carregarItens(List<ModelTodo> itens) {
+    this.itens = itens;
   }
 
   @action
-  Future editarMensagem(String id, String novoTitulo, String novaTarefa) async {
-    final String id = _auth.currentUser?.displayName ?? 'anonimous';
-    await databaseRef.child(id).update({
-      "title": novoTitulo,
-    }).then((_) {
-      log("Mensagem editada com sucesso");
-    }).catchError((error) {
-      log("Erro ao editar mensagem: $error");
-    });
-    await databaseRef.child(id).update({
-      "task": novaTarefa,
-    }).then((_) {
-      log("Mensagem editada com sucesso");
-    }).catchError((error) {
-      log("Erro ao editar mensagem: $error");
-    });
-    Modular.to.pop();
-    Modular.to.pop();
+  void atualizarIndice(int index) {
+    currentIndex = index;
   }
 
-  DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
+  @action
+  Future<void> fetchTasks() async {
+    try {
+      final dataSnapshot = await databaseReference.ref.once();
+      final tasksMap = dataSnapshot as Map<dynamic, dynamic>;
+      tasks.clear();
+      tasksMap.forEach((taskId, taskData) {
+        tasks.add(ModelTodo(
+          id: taskId,
+          tarefas: taskData['tarefas'],
+          data: DateTime.parse(taskData['data']),
+          image: taskData['image'],
+          isCompleted: false,
+        ));
+      });
+    } catch (error) {
+      print('Error fetching tasks: $error');
+      // Trate o erro conforme necessário (por exemplo, exibindo uma mensagem de erro para o usuário)
+    }
+  }
+
+  @action
+  Future<void> addTask(ModelTodo task) async {
+    final newTaskRef = databaseReference.ref.push();
+    await newTaskRef.set({
+      'name': task.tarefas,
+      'date': task.data?.toIso8601String(),
+      'imageUrl': pathImage,
+    });
+    task.id = newTaskRef.key;
+    tasks.add(task);
+  }
+
+   @action
+  Future<void> updateTask(ModelTodo task) async {
+    final newTaskRef = databaseReference.ref;
+    await newTaskRef.update({
+      'name': task.tarefas,
+      'date': task.data?.toIso8601String(),
+      'imageUrl': pathImage,
+    });
+    task.id = newTaskRef.key;
+    tasks.add(task);
+  }
+
+  @action
+  Future<void> deleteTask(String taskId) async {
+    await databaseReference.child(taskId).remove();
+    tasks.removeWhere((task) => task.id == taskId);
+  }
+
+  Future<String> getImageFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      // Salvando a imagem em algum lugar e retornando o caminho dela
+      pathImage = pickedFile.path;
+      return pickedFile.path;
+    } else {
+      // Usuário cancelou a seleção da imagem
+      return '';
+    }
+  }
+
   @action
   void atualizarBancoDeDadosEEnviarNotificacao() {
     // Atualize o banco de dados Firebase Realtime
@@ -96,65 +117,5 @@ abstract class ControllerTodoBase with Store {
       'title': 'Atualização no banco de dados',
       'body': 'Seu banco de dados foi atualizado!',
     });
-  }
-
-  @action
-  removeList(String id) {
-    final String ids = _auth.currentUser?.displayName ?? 'anonimous';
-    loading = true;
-
-    databaseRef.child(ids).remove().then((value) {
-      Utils().toastMessage('Lista Apagada');
-      Modular.to.pop();
-      loading = false;
-    }).onError((error, stackTrace) {
-      Utils().toastMessage(error.toString());
-
-      loading = false;
-    });
-  }
-
-  final FirebaseStorage storage = FirebaseStorage.instance;
-
-  Future<XFile?> getImage() async {
-    final ImagePicker picker = ImagePicker();
-    XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    imagemEsc = image;
-    return image;
-  }
-
-  Future<void> upload(String path) async {
-    File file = File(path);
-    try {
-      String ref = 'images/img-${DateTime.now().toString()}.jpg';
-      await storage.ref(ref).putFile(file);
-      listFoto.add(ref);
-      pathfoto = ref;
-    } on FirebaseException catch (e) {
-      throw Exception('Erro no upload');
-    }
-  }
-
-  Future getData() async {
-    try {
-      await getImageMemory();
-      return downloadURL;
-    } catch (e) {
-      debugPrint("Error - $e");
-      return null;
-    }
-  }
-
-  Future<void> getImageMemory() async {
-    downloadURL =
-        await FirebaseStorage.instance.ref().child(pathfoto).getDownloadURL();
-    debugPrint(downloadURL.toString());
-  }
-
-  pickAndUploadImage() async {
-    XFile? file = await getImage();
-    if (file != null) {
-      await upload(file.path);
-    }
   }
 }

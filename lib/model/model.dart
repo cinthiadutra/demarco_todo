@@ -2,12 +2,12 @@ import 'dart:convert';
 
 class ModelTodo {
   String? id;
-  String? titulo;
-  List<String>? tarefas;
+  DateTime? data;
+  String? tarefas;
   String? image;
   bool isCompleted;
   ModelTodo({
-    this.titulo,
+    this.data,
     this.tarefas,
     this.id,
     this.image,
@@ -16,11 +16,11 @@ class ModelTodo {
 
   @override
   String toString() =>
-      'ModelTodo(id: $id,titulo: $titulo, tarefas: $tarefas, isCompleted: $isCompleted, image: $image)';
+      'ModelTodo(id: $id,titulo: $data, tarefas: $tarefas, isCompleted: $isCompleted, image: $image)';
 
   Map<String, dynamic> toMap() {
     return {
-      'titulo': titulo,
+      'titulo': data,
       'tarefas': tarefas,
       'isCompleted': isCompleted,
       'id': id,
@@ -31,8 +31,8 @@ class ModelTodo {
   factory ModelTodo.fromMap(Map<String, dynamic> map) {
     return ModelTodo(
       id: map['id'],
-      titulo: map['titulo'],
-      tarefas: List<String>.from(map['tarefas']),
+      data: map['titulo'],
+      tarefas: map['tarefas'],
       isCompleted: map['isCompleted'] ?? false,
       image: map['image']
     );

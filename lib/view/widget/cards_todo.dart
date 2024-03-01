@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CardTodo extends StatefulWidget {
   final String? title;
-  final String? id;
+  final String? data;
   final String? taks;
   final String? user;
   final VoidCallback? function;
@@ -15,7 +15,7 @@ class CardTodo extends StatefulWidget {
       this.function,
       this.function2,
       this.user,
-      this.id});
+      this.data});
 
   @override
   State<CardTodo> createState() => _cardTodoState();
@@ -78,7 +78,7 @@ class _cardTodoState extends State<CardTodo> {
                 width: 20,
               ),
               Text(
-                'id :${widget.id}',
+                'data :${widget.data}',
                 style: const TextStyle(
                     fontSize: 8,
                     fontWeight: FontWeight.bold,
