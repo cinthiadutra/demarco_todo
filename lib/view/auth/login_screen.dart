@@ -4,6 +4,8 @@ import 'package:demarco_todo/view/page_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +23,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _auth = FirebaseAuth.instance;
   bool isLoginPage = false;
+
+  @observable
+  bool isShow = false;
+
+  @action
+  void togglePass() => isShow = !isShow;
 
   @override
   void dispose() {
@@ -85,20 +93,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        controller: password,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                            hintText: 'Password',
-                            prefixIcon: Icon(Icons.lock_open)),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Insira um password';
-                          }
-                          return null;
-                        },
-                      ),
+                      Observer(builder: (_) {
+                        return TextFormField(
+                          keyboardType: TextInputType.text,
+                          controller: password,
+                          obscureText: !isShow,
+                          decoration: InputDecoration(
+                              hintText: 'Password',
+                              prefixIcon: const Icon(Icons.lock_open),
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    togglePass();
+                                  },
+                                  icon: const Icon(Icons.visibility))),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Insira um password';
+                            }
+                            return null;
+                          },
+                        );
+                      }),
                     ],
                   )),
               const SizedBox(

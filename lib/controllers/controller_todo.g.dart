@@ -25,6 +25,22 @@ mixin _$ControllerTodo on ControllerTodoBase, Store {
     });
   }
 
+  late final _$tasksAtom =
+      Atom(name: 'ControllerTodoBase.tasks', context: context);
+
+  @override
+  ObservableList<ModelTodo> get tasks {
+    _$tasksAtom.reportRead();
+    return super.tasks;
+  }
+
+  @override
+  set tasks(ObservableList<ModelTodo> value) {
+    _$tasksAtom.reportWrite(value, super.tasks, () {
+      super.tasks = value;
+    });
+  }
+
   late final _$imagemEscAtom =
       Atom(name: 'ControllerTodoBase.imagemEsc', context: context);
 
@@ -73,12 +89,12 @@ mixin _$ControllerTodo on ControllerTodoBase, Store {
     });
   }
 
-  late final _$addTodoAsyncAction =
-      AsyncAction('ControllerTodoBase.addTodo', context: context);
+  late final _$addTaskAsyncAction =
+      AsyncAction('ControllerTodoBase.addTask', context: context);
 
   @override
-  Future<dynamic> addTodo() {
-    return _$addTodoAsyncAction.run(() => super.addTodo());
+  Future<void> addTask(ModelTodo task) {
+    return _$addTaskAsyncAction.run(() => super.addTask(task));
   }
 
   late final _$editarMensagemAsyncAction =
@@ -89,6 +105,14 @@ mixin _$ControllerTodo on ControllerTodoBase, Store {
       String id, String novoTitulo, String novaTarefa) {
     return _$editarMensagemAsyncAction
         .run(() => super.editarMensagem(id, novoTitulo, novaTarefa));
+  }
+
+  late final _$fetchTasksAsyncAction =
+      AsyncAction('ControllerTodoBase.fetchTasks', context: context);
+
+  @override
+  Future<void> fetchTasks() {
+    return _$fetchTasksAsyncAction.run(() => super.fetchTasks());
   }
 
   late final _$ControllerTodoBaseActionController =
@@ -120,6 +144,7 @@ mixin _$ControllerTodo on ControllerTodoBase, Store {
   String toString() {
     return '''
 downloadURL: ${downloadURL},
+tasks: ${tasks},
 imagemEsc: ${imagemEsc},
 pathfoto: ${pathfoto},
 loading: ${loading}

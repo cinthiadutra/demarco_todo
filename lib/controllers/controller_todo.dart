@@ -16,7 +16,7 @@ part 'controller_todo.g.dart';
 class ControllerTodo = ControllerTodoBase with _$ControllerTodo;
 
 abstract class ControllerTodoBase with Store {
-  final databaseRef = FirebaseDatabase.instance.ref('Post');
+  final databaseRef = FirebaseDatabase.instance.ref('task');
   final taskController = TextEditingController();
   final postController = TextEditingController();
   var dataController = TextEditingController();
@@ -26,6 +26,8 @@ abstract class ControllerTodoBase with Store {
   String? dataTask = '';
   @observable
   String? downloadURL = '';
+  @observable
+  ObservableList<ModelTodo> tasks = ObservableList<ModelTodo>();
   @observable
   XFile? imagemEsc;
   @observable
@@ -37,30 +39,48 @@ abstract class ControllerTodoBase with Store {
   bool loading = false;
   final _auth = FirebaseAuth.instance;
 
+  // @action
+  // Future addTodo() async {
+  //   final String ids = _auth.currentUser?.email ?? 'anonimous';
+  //   loading = true;
+
+  //   await databaseRef.child(ids).set({
+  //     'Usuario': _auth.currentUser?.email,
+  //     'Tarefa': post,
+  //     'data': dataTask,
+  //     'image': imagemEsc,
+  //   }).then((value) {
+  //     modeloUsado =
+  //         ModelTodo(isCompleted: false, data: post, tarefas: ListTask);
+  //     Utils().toastMessage('Conteudo Adicionado');
+  //     Modular.to.pop();
+  //     postController.clear();
+  //     dataController.clear();
+  //     loading = false;
+  //   }).onError((error, stackTrace) {
+  //     Utils().toastMessage(error.toString());
+
+  //     loading = false;
+  //   });
+  // }
+
   @action
-  Future addTodo() async {
-    final String ids = _auth.currentUser?.email ?? 'anonimous';
-    loading = true;
-
-    await databaseRef.child(ids).set({
-      'Usuario': _auth.currentUser?.email,
-      'Tarefa': post,
-      'data': dataController,
-      'image': pathfoto,
-      'id': _auth.currentUser?.email
-    }).then((value) {
-      modeloUsado =
-          ModelTodo(isCompleted: false, titulo: post, tarefas: ListTask);
-      Utils().toastMessage('Conteudo Adicionado');
-      Modular.to.pop();
-      postController.clear();
-      dataController.clear();
-      loading = false;
-    }).onError((error, stackTrace) {
-      Utils().toastMessage(error.toString());
-
-      loading = false;
+  Future<void> addTask(ModelTodo task) async {
+    final newTaskRef = databaseReference.push();
+    await newTaskRef.set({
+      'tarefa': task.tarefas,
+      'date': task.data,
+      'imageUrl': imagemEsc?.path,
+      'id': newTaskRef.key,
+      'isCompleted': task.isCompleted
     });
+    task.id = newTaskRef.key!;
+    tasks.add(task);
+    File file = File(imagemEsc!.path);
+    final pathImages = 'img-${DateTime.now().toString()}.jpg';
+    String ref = '${task.id}/$pathImages';
+    await storage.ref(ref).putFile(file);
+    Modular.to.popUntil(ModalRoute.withName('/home'));
   }
 
   @action
@@ -84,7 +104,7 @@ abstract class ControllerTodoBase with Store {
     Modular.to.pop();
   }
 
-  DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
+  DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
   @action
   void atualizarBancoDeDadosEEnviarNotificacao() {
     // Atualize o banco de dados Firebase Realtime
@@ -116,11 +136,11 @@ abstract class ControllerTodoBase with Store {
 
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  Future<XFile?> getImage() async {
+  Future<String> getImage() async {
     final ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: ImageSource.gallery);
     imagemEsc = image;
-    return image;
+    return image!.path;
   }
 
   Future<void> upload(String path) async {
@@ -137,7 +157,7 @@ abstract class ControllerTodoBase with Store {
 
   Future getData() async {
     try {
-      await getImageMemory();
+      await getImageMemory(imagemEsc!.path);
       return downloadURL;
     } catch (e) {
       debugPrint("Error - $e");
@@ -145,16 +165,37 @@ abstract class ControllerTodoBase with Store {
     }
   }
 
-  Future<void> getImageMemory() async {
-    downloadURL =
-        await FirebaseStorage.instance.ref().child(pathfoto).getDownloadURL();
-    debugPrint(downloadURL.toString());
+  Future<void> getImageMemory(String taskid) async {
+    downloadURL = await storage.ref(imagemEsc!.path).getDownloadURL();
+    log(downloadURL.toString());
   }
 
-  pickAndUploadImage() async {
-    XFile? file = await getImage();
-    if (file != null) {
-      await upload(file.path);
+  // pickAndUploadImage() async {
+  //   XFile? file = await getImage();
+  //   if (file != null) {
+  //     await upload(file.path);
+  //   }
+  // }
+
+  @action
+  Future<void> fetchTasks() async {
+    try {
+      final dataSnapshot =
+          await databaseReference.ref.once(DatabaseEventType.value);
+      final tasksMap = dataSnapshot.snapshot.value as Map<dynamic, dynamic>;
+      tasks.clear();
+      tasksMap.forEach((taskId, taskData) {
+        tasks.add(ModelTodo(
+          id: taskId,
+          tarefas: taskData['tarefas'],
+          data: taskData['date'],
+          image: taskData['imageUrl'],
+          isCompleted: false,
+        ));
+      });
+    } catch (error) {
+      print('Error fetching tasks: $error');
+      // Trate o erro conforme necessário (por exemplo, exibindo uma mensagem de erro para o usuário)
     }
   }
 }

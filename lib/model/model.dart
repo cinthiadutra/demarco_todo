@@ -2,25 +2,25 @@ import 'dart:convert';
 
 class ModelTodo {
   String? id;
-  String? titulo;
-  List<String>? tarefas;
-  String? image;
+  String data;
+  String tarefas;
+  String image;
   bool isCompleted;
   ModelTodo({
-    this.titulo,
-    this.tarefas,
+    required this.data,
+    required this.tarefas,
     this.id,
-    this.image,
+    required this.image,
     required this.isCompleted,
   });
 
   @override
   String toString() =>
-      'ModelTodo(id: $id,titulo: $titulo, tarefas: $tarefas, isCompleted: $isCompleted, image: $image)';
+      'ModelTodo(id: $id,data: $data, tarefas: $tarefas, isCompleted: $isCompleted, image: $image)';
 
   Map<String, dynamic> toMap() {
     return {
-      'titulo': titulo,
+      'data': data,
       'tarefas': tarefas,
       'isCompleted': isCompleted,
       'id': id,
@@ -30,12 +30,11 @@ class ModelTodo {
 
   factory ModelTodo.fromMap(Map<String, dynamic> map) {
     return ModelTodo(
-      id: map['id'],
-      titulo: map['titulo'],
-      tarefas: List<String>.from(map['tarefas']),
-      isCompleted: map['isCompleted'] ?? false,
-      image: map['image']
-    );
+        id: map['id'],
+        data: map['data'],
+        tarefas: map['tarefas'],
+        isCompleted: map['isCompleted'] ?? false,
+        image: map['image']);
   }
 
   String toJson() => json.encode(toMap());

@@ -1,5 +1,6 @@
 import 'package:date_format_field/date_format_field.dart';
 import 'package:demarco_todo/controllers/controller_todo.dart';
+import 'package:demarco_todo/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -49,7 +50,7 @@ class _AddListState extends State<AddList> {
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all()),
                 child: DateFormatField(
-                  controller: dataController,
+                    controller: dataController,
                     onComplete: (date) {
                       if (date != null) {
                         setState(() {
@@ -83,7 +84,7 @@ class _AddListState extends State<AddList> {
                               ),
                             )),
                         onPressed: () {
-                          controllerTodo.pickAndUploadImage();
+                          controllerTodo.getImage();
                         },
                         child: const Text(
                           'Enviar',
@@ -115,7 +116,11 @@ class _AddListState extends State<AddList> {
                           controllerTodo.dataTask = dataController.text;
                           controllerTodo.ListTask.add(taskController.text);
                         });
-                        await controllerTodo.addTodo();
+                        await controllerTodo.addTask(ModelTodo(
+                            isCompleted: false,
+                            tarefas: postController.text,
+                            data: dataController.text,
+                            image: controllerTodo.imagemEsc?.path ?? ''));
                         Modular.to.pop();
                         Modular.to.pop();
                       }),

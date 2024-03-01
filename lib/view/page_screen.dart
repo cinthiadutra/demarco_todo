@@ -9,6 +9,7 @@ import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firebase_database/ui/firebase_sorted_list.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -58,42 +59,58 @@ class _PageScreenState extends State<PageScreen> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          FutureBuilder(
-            future: controller.getData(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const Text(
-                  "Something went wrong",
-                );
-              }
-              if (snapshot.connectionState == ConnectionState.done) {
-                return VxSwiper.builder(
-                    itemCount: 3,
-                    itemBuilder: (context, snap) {
-                      return Image.network(
-                        snapshot.data.toString(),
-                      );
-                    });
-              }
-              return const Center(child: CircularProgressIndicator());
-            },
-          ),
-          Expanded(
-            child: FirebaseAnimatedList(
-                query: controller.databaseRef,
+      body: Observer(builder: (_) {
+        return
+            // Column(
+            //   children: [
+            //     FutureBuilder(
+            //       future: controller.getData(),
+            //       builder: (context, snapshot) {
+            //         if (snapshot.hasError) {
+            //        Container();
+            //         }
+            //         if (snapshot.connectionState == ConnectionState.done) {
+            //           return VxSwiper(
+            //               items: [ Image.network(
+            //                   snapshot.datatoString(),
+            //                 )]
+            //               );
+            //         }
+            //         return const Center(child: CircularProgressIndicator());
+            //       },
+            //     ),
+
+            ListView(
+          shrinkWrap: true,
+          children: [
+            SizedBox(
+              width: MediaQuery.sizeOf(context).width * .8,
+              height: 300,
+              child: FutureBuilder(
+                  future: controller.storage
+                      .ref()
+                      .child("${controller.modeloUsado?.id}")
+                      .listAll(),
+                  builder: (context, snapshot) {
+                    final images = snapshot.data?.items.toList();
+                    return VxSwiper(items: [Image.network(images.toString())]);
+                  }),
+            ),
+            FirebaseAnimatedList(
+                shrinkWrap: true,
+                query: controller.databaseReference,
                 defaultChild: const Text('Loading'),
                 itemBuilder: (context, snapshot, animation, index) {
-                  final title = snapshot.child('title').value.toString();
-                  final tarefa = snapshot.child('task').value.toString();
+                  final tarefa = snapshot.child('tarefa').value.toString();
+                  final data = snapshot.child('date').value.toString();
 
                   return ListTile(
                     title: CardTodo(
-                      title: snapshot.child('title').value.toString(),
-                      taks: snapshot.child('task').value.toString(),
+                      data: snapshot.child('date').value.toString(),
+                      taks: snapshot.child('tarefa').value.toString(),
                       user: snapshot.child('user').value.toString(),
                       id: snapshot.child('id').value.toString(),
+                      complet: snapshot.child('completed').value.toString(),
                     ),
                     trailing: PopupMenuButton(
                         icon: const Icon(Icons.more_vert),
@@ -108,8 +125,8 @@ class _PageScreenState extends State<PageScreen> {
                                       MaterialPageRoute(
                                           builder: (context) => PageTask(
                                                 index: index,
-                                                titulo: title,
-                                                tarefa: tarefa,
+                                                titulo: tarefa,
+                                                tarefa: data,
                                               ))),
                                 ),
                               ),
@@ -128,9 +145,11 @@ class _PageScreenState extends State<PageScreen> {
                             ]),
                   );
                 }),
-          ),
-        ],
-      ),
+          ],
+        );
+        //   ],
+        // );
+      }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(context,
