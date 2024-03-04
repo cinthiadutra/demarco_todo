@@ -131,7 +131,7 @@ abstract class ControllerTodoBase with Store {
   }
 
   final Reference storage = FirebaseStorage.instance.ref();
-
+@action
   Future<void> getImage() async {
     final ImagePicker picker = ImagePicker();
     XFile? file = await picker.pickImage(source: ImageSource.gallery);
@@ -149,5 +149,7 @@ abstract class ControllerTodoBase with Store {
       //Some error occurred
     }
   }
+
+  
 
 }

@@ -25,7 +25,7 @@ class CarouselWidget extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * .8,
                 margin: const EdgeInsets.symmetric(horizontal: 5.0),
                 child: Image.network(
-                  imagem,
+                  imagem ?? 'https://www.demarco.com.br/img/logo-2.png',
                   fit: BoxFit.cover,
                   scale: 3.0,
                 ),

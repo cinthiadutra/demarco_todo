@@ -2,9 +2,11 @@ import 'package:demarco_todo/model/model.dart';
 import 'package:demarco_todo/view/page_tasks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class ItemWidget extends StatelessWidget {
+class ItemWidget extends StatefulWidget {
+  @observable
   final ModelTodo item;
   final VoidCallback onTap;
   final VoidCallback onCompleted;
@@ -21,20 +23,25 @@ class ItemWidget extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<ItemWidget> createState() => _ItemWidgetState();
+}
+
+class _ItemWidgetState extends State<ItemWidget> {
+  @override
   Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
       children: [
         ListTile(
-          title: Text(item.tarefas),
+          title: Text(widget.item.tarefas),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(item.data),
-              Text(item.isCompleted == true ? 'Concluido' : 'Pendente'),
+              Text(widget.item.data),
+              Text(widget.item.isCompleted == true ? 'Concluido' : 'Pendente'),
             ],
           ),
-          onTap: onTap,
+          onTap: widget.onTap,
           trailing: Observer(builder: (_) {
             return PopupMenuButton(
                 icon: const Icon(Icons.more_vert),
@@ -48,21 +55,25 @@ class ItemWidget extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PageTask(
-                                        index: index,
-                                        titulo: item.data,
-                                        tarefa: item.tarefas,
+                                        index: widget.index,
+                                        titulo: widget.item.data,
+                                        tarefa: widget.item.tarefas,
                                       ))),
                         ),
                       ),
                       PopupMenuItem(
                           value: 1,
                           child: ListTile(
-                            leading: const Icon(Icons.delete),
-                            title: const Text('Excluir'),
-                            onTap: () {
-                              onRemove;
-                            },
-                          )),
+                              leading: const Icon(Icons.delete),
+                              title: const Text('Excluir'),
+                              onTap: () {
+                                VxDialog.showConfirmation(context,
+                                    content: const Text(
+                                        'Voce tem certeza que desejar Excluir?'),
+                                    onConfirmPress: () {
+                                  widget.onRemove;
+                                });
+                              })),
                       PopupMenuItem(
                           value: 1,
                           child: ListTile(
@@ -73,8 +84,12 @@ class ItemWidget extends StatelessWidget {
                                   content:
                                       const Text('Voce concluiu a tarefa?'),
                                   onConfirmPress: () {
-                                item.isCompleted = !item.isCompleted;
-                                onCompleted;
+                                setState(() {
+                                  widget.item.isCompleted =
+                                      !widget.item.isCompleted;
+                                });
+
+                                widget.onCompleted;
                                 Navigator.pop(context);
                               });
                             },

@@ -107,6 +107,14 @@ mixin _$ControllerTodo on ControllerTodoBase, Store {
         .run(() => super.editarMensagem(id, novoTitulo, novaTarefa));
   }
 
+  late final _$getImageAsyncAction =
+      AsyncAction('ControllerTodoBase.getImage', context: context);
+
+  @override
+  Future<void> getImage() {
+    return _$getImageAsyncAction.run(() => super.getImage());
+  }
+
   late final _$ControllerTodoBaseActionController =
       ActionController(name: 'ControllerTodoBase', context: context);
 
