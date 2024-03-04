@@ -107,14 +107,6 @@ mixin _$ControllerTodo on ControllerTodoBase, Store {
         .run(() => super.editarMensagem(id, novoTitulo, novaTarefa));
   }
 
-  late final _$fetchTasksAsyncAction =
-      AsyncAction('ControllerTodoBase.fetchTasks', context: context);
-
-  @override
-  Future<void> fetchTasks() {
-    return _$fetchTasksAsyncAction.run(() => super.fetchTasks());
-  }
-
   late final _$ControllerTodoBaseActionController =
       ActionController(name: 'ControllerTodoBase', context: context);
 

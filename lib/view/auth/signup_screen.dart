@@ -41,7 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
               loading = false;
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const PageScreen()));
+                  MaterialPageRoute(builder: (context) =>  ItemPage()));
             }))
         .onError((error, stackTrace) {
       Utils().toastMessage(error.toString());

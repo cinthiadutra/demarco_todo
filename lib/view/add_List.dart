@@ -1,8 +1,11 @@
 import 'package:date_format_field/date_format_field.dart';
 import 'package:demarco_todo/controllers/controller_todo.dart';
 import 'package:demarco_todo/model/model.dart';
+import 'package:demarco_todo/view/page_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:mobx/mobx.dart';
 
 class AddList extends StatefulWidget {
   const AddList({Key? key}) : super(key: key);
@@ -13,9 +16,10 @@ class AddList extends StatefulWidget {
 
 class _AddListState extends State<AddList> {
   final postController = TextEditingController();
-  final taskController = TextEditingController();
   final dataController = TextEditingController();
   final controllerTodo = Modular.get<ControllerTodo>();
+  @observable
+  bool isfoto = false;
 
   @override
   void initState() {
@@ -69,29 +73,42 @@ class _AddListState extends State<AddList> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all()),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('  Selecione o arquivo..'),
-                    ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.grey.shade200),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                            )),
-                        onPressed: () {
-                          controllerTodo.getImage();
-                        },
-                        child: const Text(
-                          'Enviar',
-                          style: TextStyle(fontSize: 10),
-                        ))
-                  ],
-                ),
+                child: Observer(builder: (_) {
+                  return Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Visibility(
+                          visible: !isfoto, child: const Text('Selecione..')),
+                      Visibility(
+                          visible: isfoto,
+                          child: Image.network(
+                            controllerTodo.downloadURL ??
+                                'https://www.demarco.com.br/index.html',
+                            scale: 5.0,
+                          )),
+                      ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                  Colors.grey.shade200),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                              )),
+                          onPressed: () {
+                            setState(() {
+                              isfoto = !isfoto;
+                            });
+                            controllerTodo.getImage();
+                          },
+                          child: const Text(
+                            'Upload',
+                            style: TextStyle(fontSize: 10),
+                          ))
+                    ],
+                  );
+                }),
               ),
               const SizedBox(
                 height: 30,
@@ -114,15 +131,19 @@ class _AddListState extends State<AddList> {
                           controllerTodo.loading = true;
                           controllerTodo.post = postController.text;
                           controllerTodo.dataTask = dataController.text;
-                          controllerTodo.ListTask.add(taskController.text);
+                          controllerTodo.listaTodoGeral.add(ModelTodo(
+                              data: dataController.text,
+                              tarefas: postController.text,
+                              image: controllerTodo.downloadURL!,
+                              isCompleted: false));
                         });
                         await controllerTodo.addTask(ModelTodo(
                             isCompleted: false,
                             tarefas: postController.text,
                             data: dataController.text,
-                            image: controllerTodo.imagemEsc?.path ?? ''));
-                        Modular.to.pop();
-                        Modular.to.pop();
+                            image: controllerTodo.downloadURL!));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ItemPage()));
                       }),
                   const SizedBox(
                     width: 10,
@@ -137,14 +158,14 @@ class _AddListState extends State<AddList> {
                             ),
                           )),
                       child: const Text('Cancelar'),
-                      onPressed: () async {
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ItemPage()));
                         setState(() {
                           controllerTodo.loading = true;
                           postController.clear();
-                          taskController.clear();
                           dataController.clear();
                         });
-                        Modular.to.navigate('/home');
                       }),
                 ],
               )

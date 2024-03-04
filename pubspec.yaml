@@ -50,6 +50,8 @@ dependencies:
   firebase_storage: ^11.6.6
   date_format_field: ^0.1.0
   velocity_x: ^4.1.2
+  carousel_slider: ^4.2.1
+  firebase_ui_database: ^1.4.2
 
 dev_dependencies:
   flutter_test:
