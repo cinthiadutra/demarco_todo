@@ -1,6 +1,7 @@
 # demarco_todo
 
 Projeto de Lista de Tarefas com integração com FireBase RealTime.
+Usando Flutter Mobx
 
   <img width="370" alt="Captura de Tela 2024-03-05 às 15 39 39" src="https://github.com/cinthiadutra/demarco_todo/assets/63372660/55310819-1b5c-416c-a4bb-043dce8f5f7d">
 
