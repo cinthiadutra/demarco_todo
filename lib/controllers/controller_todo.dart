@@ -131,7 +131,7 @@ abstract class ControllerTodoBase with Store {
   }
 
   final Reference storage = FirebaseStorage.instance.ref();
-@action
+  @action
   Future<void> getImage() async {
     final ImagePicker picker = ImagePicker();
     XFile? file = await picker.pickImage(source: ImageSource.gallery);
@@ -150,6 +150,13 @@ abstract class ControllerTodoBase with Store {
     }
   }
 
-  
+  Future<void> deleteItem(int index) async {
+    try {
+      await databaseRef.ref().child(index.toString()).remove();
+      await databaseRef.ref().get();
+    } catch (error) {
+      print('Erro ao excluir item: $error');
+    }
+  }
 
 }

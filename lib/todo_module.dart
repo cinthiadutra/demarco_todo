@@ -1,6 +1,7 @@
 import 'package:demarco_todo/controllers/controller_todo.dart';
 import 'package:demarco_todo/view/auth/login_screen.dart';
 import 'package:demarco_todo/view/page_screen.dart';
+import 'package:demarco_todo/view/page_tasks.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 class TodoModule extends Module {
@@ -12,7 +13,8 @@ class TodoModule extends Module {
   @override
   void routes(r) {
     r.child('/', child: (context) => const LoginScreen());
-    r.child('/home', child: (context) =>  ItemPage());
+    r.child('/home', child: (context) => const ItemPage());
+    r.child('/task', child: (context) => PageTask());
   }
 
   @override

@@ -2,12 +2,14 @@ import 'package:demarco_todo/model/model.dart';
 import 'package:demarco_todo/view/page_tasks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class ItemWidget extends StatefulWidget {
   @observable
   final ModelTodo item;
+
   final VoidCallback onTap;
   final VoidCallback onCompleted;
   final int index;
@@ -51,14 +53,7 @@ class _ItemWidgetState extends State<ItemWidget> {
                         child: ListTile(
                           leading: const Icon(Icons.edit),
                           title: const Text('Editar'),
-                          onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageTask(
-                                        index: widget.index,
-                                        titulo: widget.item.data,
-                                        tarefa: widget.item.tarefas,
-                                      ))),
+                          onTap: () => Modular.to.pushNamed('/task')
                         ),
                       ),
                       PopupMenuItem(
@@ -99,5 +94,7 @@ class _ItemWidgetState extends State<ItemWidget> {
         ),
       ],
     );
+    
   }
+  
 }
