@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
         .then((value) {
       Utils().toastMessage(value.user!.email.toString());
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) =>  ItemPage()));
+          context, MaterialPageRoute(builder: (context) => const ItemPage()));
       setState(() {
         loading = false;
       });

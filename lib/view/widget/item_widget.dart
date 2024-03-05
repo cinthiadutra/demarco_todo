@@ -51,10 +51,12 @@ class _ItemWidgetState extends State<ItemWidget> {
                       PopupMenuItem(
                         value: 1,
                         child: ListTile(
-                          leading: const Icon(Icons.edit),
-                          title: const Text('Editar'),
-                          onTap: () => Modular.to.pushNamed('/task')
-                        ),
+                            leading: const Icon(Icons.edit),
+                            title: const Text('Editar'),
+                            onTap: () {
+                              Modular.to.pushNamed('/task');
+                              Navigator.pop(context);
+                            }),
                       ),
                       PopupMenuItem(
                           value: 1,
@@ -67,6 +69,7 @@ class _ItemWidgetState extends State<ItemWidget> {
                                         'Voce tem certeza que desejar Excluir?'),
                                     onConfirmPress: () {
                                   widget.onRemove;
+                                  Navigator.pop(context);
                                 });
                               })),
                       PopupMenuItem(
@@ -94,7 +97,5 @@ class _ItemWidgetState extends State<ItemWidget> {
         ),
       ],
     );
-    
   }
-  
 }

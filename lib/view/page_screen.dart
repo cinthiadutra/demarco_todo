@@ -30,6 +30,7 @@ class _ItemPageState extends State<ItemPage> {
     final databaseFoto = FirebaseDatabase.instance.ref();
 
     return Scaffold(
+      drawer: const Drawer(),
       body: Observer(
         builder: (_) {
           return Padding(
@@ -37,6 +38,7 @@ class _ItemPageState extends State<ItemPage> {
             child: Container(
               child: ListView(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   const SizedBox(
                     height: 40,
@@ -53,33 +55,38 @@ class _ItemPageState extends State<ItemPage> {
                   ),
                   SizedBox(
                     height: 200,
-                    child: FirebaseAnimatedList(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        query: databaseFoto,
-                        itemBuilder: (BuildContext context,
-                            DataSnapshot snapshot,
-                            Animation<double> animation,
-                            int index) {
-                          return Image.network(
-                              snapshot.child('image').value.toString()
-                              // Lista de URLs das imagens
-                              );
-                        }),
+                    child: Center(
+                      child: FirebaseAnimatedList(
+                          padding: const EdgeInsets.all(10),
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          query: databaseFoto,
+                          itemBuilder: (BuildContext context,
+                              DataSnapshot snapshot,
+                              Animation<double> animation,
+                              int index) {
+                            return Image.network(
+                                snapshot.child('image').value.toString()
+                                // Lista de URLs das imagens
+                                );
+                          }),
+                    ),
                   ),
                   const Divider(),
                   FirebaseAnimatedList(
+                    scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     query: databaseRef,
                     defaultChild: const Text('Loading'),
                     itemBuilder: (context, snapshot, animation, indext) {
                       return InkWell(
                         onTap: () {
-                          VxDialog.showConfirmation(context,
-                              onConfirmPress: () {
+                          VxDialog.showAlert(context, onPressed: () {
                             Navigator.pop(context);
                           },
                               content: SizedBox(
+                                height: 400,
+                                width: 300,
                                 child: Column(
                                   children: [
                                     Image.network(snapshot

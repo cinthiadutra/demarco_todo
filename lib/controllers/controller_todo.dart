@@ -67,12 +67,13 @@ abstract class ControllerTodoBase with Store {
   @action
   Future<void> addTask(ModelTodo task) async {
     DatabaseReference ref = FirebaseDatabase.instance.ref().push();
-    String? id = auth.currentUser?.email;
+    String? id = auth.currentUser?.uid;
+    ref.key == id;
     ref.set({
       'tarefa': task.tarefas,
       'date': task.data,
       'image': downloadURL,
-      'id': auth.currentUser?.email,
+      'id': id,
       'isCompleted': task.isCompleted
     });
     tasks.add(task);
@@ -158,5 +159,4 @@ abstract class ControllerTodoBase with Store {
       print('Erro ao excluir item: $error');
     }
   }
-
 }
