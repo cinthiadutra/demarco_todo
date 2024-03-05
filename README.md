@@ -1,16 +1,14 @@
 # demarco_todo
 
-A new Flutter project.
+Projeto de Lista de Tarefas com integração com FireBase RealTime.
+Usando Flutter Mobx
+
+  <img width="370" alt="Captura de Tela 2024-03-05 às 15 39 39" src="https://github.com/cinthiadutra/demarco_todo/assets/63372660/55310819-1b5c-416c-a4bb-043dce8f5f7d">
+
+
+
+
+<img width="322" alt="Captura de Tela 2024-03-05 às 15 37 21" src="https://github.com/cinthiadutra/demarco_todo/assets/63372660/c3940659-ed47-48a4-b7d3-e87322126944">
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
